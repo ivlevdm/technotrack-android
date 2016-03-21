@@ -1,5 +1,6 @@
 package ru.technotrack.divlev.homework1;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,5 +19,9 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, e.getMessage());
         }
 
+        Intent intent = new Intent(this, ListActivity.class);
+        startActivity(intent);
+
+        finish();
     }
 }
