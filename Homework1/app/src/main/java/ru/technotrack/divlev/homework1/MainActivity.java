@@ -12,16 +12,36 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage());
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        ListRunner listRunner = new ListRunner(this);
+        Thread thread = new Thread(listRunner);
+        thread.start();
+    }
+
+    class ListRunner implements Runnable {
+        private AppCompatActivity activity;
+
+        public ListRunner(AppCompatActivity activity) {
+            this.activity = activity;
         }
 
-        Intent intent = new Intent(this, ListActivity.class);
-        startActivity(intent);
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                Log.e(TAG, e.getMessage());
+            }
 
-        finish();
+            Intent intent = new Intent(activity, ListActivity.class);
+            startActivity(intent);
+
+            activity.finish();
+        }
     }
 }
