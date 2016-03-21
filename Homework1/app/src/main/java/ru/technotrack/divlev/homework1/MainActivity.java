@@ -1,11 +1,12 @@
 package ru.technotrack.divlev.homework1;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     public static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -24,20 +25,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class ListRunner implements Runnable {
-        private AppCompatActivity activity;
+        private static final long SLEEP_TIME = 2000;
 
-        public ListRunner(AppCompatActivity activity) {
+        private Activity activity;
+
+        public ListRunner(Activity activity) {
             this.activity = activity;
         }
 
         @Override
         public void run() {
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                Log.e(TAG, e.getMessage());
-            }
+            long startTime = System.currentTimeMillis();
+            long delta = 0;
 
+            while (delta < SLEEP_TIME) {
+                try {
+                    Thread.sleep(SLEEP_TIME - delta);
+                } catch (InterruptedException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+                delta = System.currentTimeMillis() - startTime;
+            }
             Intent intent = new Intent(activity, ListActivity.class);
             startActivity(intent);
 
