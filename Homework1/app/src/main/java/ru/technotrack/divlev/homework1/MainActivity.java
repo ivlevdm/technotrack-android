@@ -2,12 +2,16 @@ package ru.technotrack.divlev.homework1;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.concurrent.TimeUnit;
+
 public class MainActivity extends Activity {
     public static final String TAG = MainActivity.class.getSimpleName();
+
+    private ShowListActivityAsyncTask asyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,40 +23,39 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        ListRunner listRunner = new ListRunner(this);
-        Thread thread = new Thread(listRunner);
-        thread.start();
+        asyncTask = new ShowListActivityAsyncTask();
+        asyncTask.execute(this);
     }
 
-    class ListRunner implements Runnable {
-        private static final long SLEEP_TIME = 2000;
+    @Override
+    protected void onPause() {
+        super.onPause();
+        asyncTask.cancel(true);
+    }
 
-        private Activity activity;
+    private void runListActivity() {
+        Intent intent = new Intent(this, ListActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
-        public ListRunner(Activity activity) {
-            this.activity = activity;
+    private class ShowListActivityAsyncTask extends AsyncTask<MainActivity, Void, MainActivity> {
+        private static final long SLEEP_TIME_SEC = 2;
+
+        @Override
+        protected MainActivity doInBackground(MainActivity... params) {
+            try {
+                TimeUnit.SECONDS.sleep(SLEEP_TIME_SEC);
+            } catch (InterruptedException e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            return params[0];
         }
 
         @Override
-        public void run() {
-            long startTime = System.currentTimeMillis();
-            long delta = 0;
-
-            while (delta < SLEEP_TIME) {
-                try {
-                    Thread.sleep(SLEEP_TIME - delta);
-                } catch (InterruptedException e) {
-                    Log.e(TAG, e.getMessage());
-                }
-                delta = System.currentTimeMillis() - startTime;
-            }
-
-            if (!activity.isFinishing()) {
-                Intent intent = new Intent(activity, ListActivity.class);
-                startActivity(intent);
-
-                activity.finish();
-            }
+        protected void onPostExecute(MainActivity result) {
+            result.runListActivity();
         }
     }
 }
