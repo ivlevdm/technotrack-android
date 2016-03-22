@@ -19,17 +19,17 @@ public class NumberToRusString {
         number %= 1000;
 
         if ( thousands > 0) {
-            res.append(convertNumberLess1000(number / 1000));
+            res.append(convertNumberLess1000(number / 1000, true));
             res.append(" ");
             res.append(getThousandsFormat(thousands));
         }
 
-        res.append(convertNumberLess1000(number));
+        res.append(convertNumberLess1000(number, false));
 
         return res.toString();
     }
 
-    static private StringBuilder convertNumberLess1000(int number) {
+    static private StringBuilder convertNumberLess1000(int number, boolean is_thousands) {
         StringBuilder res = new StringBuilder();
 
         if (number < 0 || number > 999) {
@@ -56,17 +56,17 @@ public class NumberToRusString {
                 res.append("четыреста");
                 break;
             default:
-                res.append(convertNumberLess10(number));
+                res.append(convertNumberLess10(number, false));
                 res.append("сот");
         }
         if (number % 100 > 0) {
             res.append(" ");
-            res.append(convertNumberLess100(number % 100));
+            res.append(convertNumberLess100(number % 100, is_thousands));
         }
         return res;
     }
 
-    static private String convertNumberLess100(int number) {
+    static private String convertNumberLess100(int number, boolean is_thousands) {
         StringBuilder res = new StringBuilder();
         String[] between11And19 = new String[] {"одиннадцать", "двенадцать", "тринадцать",
             "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"};
@@ -84,28 +84,35 @@ public class NumberToRusString {
                 break;
             case 2:
             case 3:
-                res.append(convertNumberLess10(number / 10));
+                res.append(convertNumberLess10(number / 10, false));
                 res.append("дцать");
                 break;
             case 4:
                 res.append("сорок");
                 break;
+            case 9:
+                res.append("девяносто");
+                break;
             default:
-                res.append(convertNumberLess10(number / 10));
+                res.append(convertNumberLess10(number / 10, false));
                 res.append("десят");
         }
 
         if (number % 10 > 0) {
             res.append(" ");
-            res.append(convertNumberLess10(number % 10));
+            res.append(convertNumberLess10(number % 10, is_thousands));
         }
 
         return res.toString();
     }
 
-    static private String convertNumberLess10(int number) {
+    static private String convertNumberLess10(int number, boolean is_thousands) {
         if (number < 1 || number > 9) {
             throw new IllegalArgumentException();
+        }
+
+        if (is_thousands && number < 3) {
+            return number == 1 ? "одна" : "две";
         }
 
         String[] numbersLess10 = new String[] {"один", "два", "три", "четыре", "пять", "шесть",

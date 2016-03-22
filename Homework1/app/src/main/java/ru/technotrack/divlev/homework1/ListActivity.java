@@ -13,6 +13,5 @@ public class ListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list);
 
         ListView listView = (ListView)findViewById(R.id.listView);
-
     }
 }
