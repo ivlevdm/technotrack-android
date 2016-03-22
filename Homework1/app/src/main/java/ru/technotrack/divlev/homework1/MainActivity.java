@@ -46,10 +46,13 @@ public class MainActivity extends Activity {
                 }
                 delta = System.currentTimeMillis() - startTime;
             }
-            Intent intent = new Intent(activity, ListActivity.class);
-            startActivity(intent);
 
-            activity.finish();
+            if (!activity.isFinishing()) {
+                Intent intent = new Intent(activity, ListActivity.class);
+                startActivity(intent);
+
+                activity.finish();
+            }
         }
     }
 }
