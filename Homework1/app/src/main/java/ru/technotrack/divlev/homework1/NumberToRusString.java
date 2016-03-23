@@ -19,9 +19,12 @@ public class NumberToRusString {
         number %= 1000;
 
         if ( thousands > 0) {
-            res.append(convertNumberLess1000(number / 1000, true));
+            res.append(convertNumberLess1000(thousands, true));
             res.append(" ");
             res.append(getThousandsFormat(thousands));
+            if (number > 0) {
+                res.append(" ");
+            }
         }
 
         res.append(convertNumberLess1000(number, false));
@@ -56,7 +59,7 @@ public class NumberToRusString {
                 res.append("четыреста");
                 break;
             default:
-                res.append(convertNumberLess10(number, false));
+                res.append(convertNumberLess10(number / 100, false));
                 res.append("сот");
         }
         if (number % 100 > 0) {
@@ -68,15 +71,15 @@ public class NumberToRusString {
 
     static private String convertNumberLess100(int number, boolean is_thousands) {
         StringBuilder res = new StringBuilder();
-        String[] between11And19 = new String[] {"одиннадцать", "двенадцать", "тринадцать",
+        String[] between10And19 = new String[] {"десять", "одиннадцать", "двенадцать", "тринадцать",
             "четырнадцать", "пятнадцать", "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"};
 
         if (number < 1 || number > 100) {
             throw new IllegalArgumentException();
         }
 
-        if (number > 10 && number < 20) {
-            return between11And19[number - 11];
+        if (number > 9 && number < 20) {
+            return between10And19[number - 10];
         }
 
         switch (number / 10) {
@@ -108,7 +111,7 @@ public class NumberToRusString {
 
     static private String convertNumberLess10(int number, boolean is_thousands) {
         if (number < 1 || number > 9) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Number is " + number + ".");
         }
 
         if (is_thousands && number < 3) {
