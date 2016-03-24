@@ -1,6 +1,7 @@
 package ru.technotrack.divlev.homework1;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,21 +41,26 @@ class ListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        View rowView = convertView;
-        if (rowView == null) {
+
+        if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater)
                     context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            rowView = inflater.inflate(R.layout.listrow, null, true);
+            convertView = inflater.inflate(R.layout.listrow, null, true);
             holder = new ViewHolder();
-            holder.textView = (TextView) rowView.findViewById(R.id.Itemtext);
-            holder.imageView = (ImageView) rowView.findViewById(R.id.icon);
-            rowView.setTag(holder);
+            holder.textView = (TextView) convertView.findViewById(R.id.Itemtext);
+            holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
+            convertView.setTag(holder);
         } else {
-            holder = (ViewHolder) rowView.getTag();
+            holder = (ViewHolder) convertView.getTag();
         }
 
         holder.textView.setText(NumberToRusString.convert(position + 1));
-        return rowView;
+        if (position % 2 == 0) {
+            convertView.setBackgroundColor(Color.WHITE);
+        } else {
+            convertView.setBackgroundColor(Color.GRAY);
+        }
+        return convertView;
     }
 
 }

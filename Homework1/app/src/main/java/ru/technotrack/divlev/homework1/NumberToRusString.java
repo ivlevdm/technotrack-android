@@ -5,7 +5,7 @@ public class NumberToRusString {
     private NumberToRusString() {};
 
     static public String convert(int number) throws IllegalArgumentException{
-        StringBuilder res = new StringBuilder("");
+        StringBuilder res = new StringBuilder();
 
         if (number > 1000000 || number < 1) {
             throw new IllegalArgumentException();
@@ -102,7 +102,9 @@ public class NumberToRusString {
         }
 
         if (number % 10 > 0) {
-            res.append(" ");
+            if (number / 10 > 0) {
+                res.append(" ");
+            }
             res.append(convertNumberLess10(number % 10, is_thousands));
         }
 
@@ -111,7 +113,7 @@ public class NumberToRusString {
 
     static private String convertNumberLess10(int number, boolean is_thousands) {
         if (number < 1 || number > 9) {
-            throw new IllegalArgumentException("Number is " + number + ".");
+            throw new IllegalArgumentException();
         }
 
         if (is_thousands && number < 3) {
