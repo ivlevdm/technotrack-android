@@ -1,12 +1,12 @@
 package ru.technotrack.divlev.homework2;
 
-import android.app.Activity;
+import android.app.*;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
-import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity {
@@ -30,23 +30,37 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        sleepAsyncTask = new SleepAsyncTask(this);
-        sleepAsyncTask.execute();
+        if (!isTaskRun) {
+            isTaskRun = true;
+            isTimerOver= false;
+            isJsonParsed = false;
 
-        jsonAsyncTask = new DownloadAndParseJsonAsyncTask(this);
-        jsonAsyncTask.execute();
+            sleepAsyncTask = new SleepAsyncTask(this);
+            sleepAsyncTask.execute();
+
+            jsonAsyncTask = new DownloadAndParseJsonAsyncTask(this);
+            jsonAsyncTask.execute();
+        }
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        sleepAsyncTask.cancel(true);
-        jsonAsyncTask.cancel(true);
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (!isChangingConfigurations()) {
+            if (sleepAsyncTask.getStatus() != AsyncTask.Status.FINISHED) {
+                sleepAsyncTask.cancel(true);
+            }
+            if (jsonAsyncTask.getStatus() != AsyncTask.Status.FINISHED) {
+                jsonAsyncTask.cancel(true);
+            }
+            isTaskRun = false;
+        }
     }
 
     private void runListActivity() {
-        if (isJsonParsed && isTimerOver && 0 == 1) {
-            Intent intent = new Intent(this, MainActivity.class);
+        if (isJsonParsed && isTimerOver) {
+            Intent intent = new Intent(this, TechListActivity.class);
             startActivity(intent);
             finish();
         }
@@ -60,7 +74,6 @@ public class MainActivity extends Activity {
         public SleepAsyncTask(MainActivity activity) {
             this.activity = activity;
         }
-
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -93,8 +106,10 @@ public class MainActivity extends Activity {
         protected Void doInBackground(Void... params) {
             try {
                 String jsonString = HttpDownloader.getUrlString(getString(R.string.json_url));
-                Log.d(TAG, jsonString);
-            } catch (IOException e) {
+                List<TechnologyDescription> data =
+                        TechnologyDescription.parseFromJson( getApplicationContext(), jsonString);
+                //Log.d(TAG, jsonString);
+            } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
             }
             return null;
