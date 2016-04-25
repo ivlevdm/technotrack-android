@@ -36,8 +36,8 @@ public class PictureDownloader<Token> extends HandlerThread {
         this.responseHandler = responseHandler;
     }
 
-    public void queuePicture(Token token, Listener listener, String url) {
-        requestMap.put(token, new Pair<Listener<Token>, String>(listener, url));
+    public void queuePicture(Token token, Listener<Token> listener, String url) {
+        requestMap.put(token, new Pair<>(listener, url));
         handler.obtainMessage(MESSAGE_DOWNLOAD, token)
                 .sendToTarget();
     }
@@ -83,7 +83,7 @@ public class PictureDownloader<Token> extends HandlerThread {
         responseHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (requestMap.get(token) == null || !requestMap.get(token).equals(url)) {
+                if (requestMap.get(token) == null || !requestMap.get(token).second.equals(url)) {
                     return;
                 }
                 Listener<Token> listener = requestMap.get(token).first;
