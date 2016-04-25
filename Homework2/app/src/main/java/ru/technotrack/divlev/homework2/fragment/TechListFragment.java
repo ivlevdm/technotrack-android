@@ -1,4 +1,4 @@
-package ru.technotrack.divlev.homework2;
+package ru.technotrack.divlev.homework2.fragment;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,9 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import ru.technotrack.divlev.homework2.utils.LruCacheBitmapStorage;
+import ru.technotrack.divlev.homework2.utils.PictureDownloader;
+import ru.technotrack.divlev.homework2.R;
+import ru.technotrack.divlev.homework2.adapter.TechListAdapter;
+
 public class TechListFragment extends BaseFragment {
     private ListView listView;
-    private PictureDownloader<TechnologyAdapter.ViewHolder> pictureDownloaderThread;
+    private PictureDownloader<TechListAdapter.ViewHolder> pictureDownloaderThread;
 
     @Nullable
     @Override
@@ -31,7 +36,7 @@ public class TechListFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        listView.setAdapter(new TechnologyAdapter(getActivity(), pictureDownloaderThread));
+        listView.setAdapter(new TechListAdapter(getActivity(), pictureDownloaderThread));
         super.onViewCreated(view, savedInstanceState);
     }
 

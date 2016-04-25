@@ -1,4 +1,4 @@
-package ru.technotrack.divlev.homework2;
+package ru.technotrack.divlev.homework2.utils;
 
 import android.content.Context;
 
@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import ru.technotrack.divlev.homework2.R;
 
 public class TechnologyDescription {
     static private List<TechnologyDescription> data = null;

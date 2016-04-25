@@ -1,4 +1,4 @@
-package ru.technotrack.divlev.homework2;
+package ru.technotrack.divlev.homework2.activity;
 
 import android.app.*;
 import android.content.Intent;
@@ -8,6 +8,10 @@ import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import ru.technotrack.divlev.homework2.utils.HttpDownloader;
+import ru.technotrack.divlev.homework2.R;
+import ru.technotrack.divlev.homework2.utils.TechnologyDescription;
 
 public class MainActivity extends Activity {
 

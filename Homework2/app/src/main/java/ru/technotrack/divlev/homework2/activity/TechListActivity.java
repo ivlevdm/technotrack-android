@@ -1,8 +1,13 @@
-package ru.technotrack.divlev.homework2;
+package ru.technotrack.divlev.homework2.activity;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import ru.technotrack.divlev.homework2.fragment.BaseFragment;
+import ru.technotrack.divlev.homework2.fragment.BaseFragmentInterface;
+import ru.technotrack.divlev.homework2.R;
+import ru.technotrack.divlev.homework2.fragment.TechListFragment;
 
 public class TechListActivity extends AppCompatActivity implements BaseFragmentInterface {
     private static final String TAG = TechListActivity.class.getSimpleName();

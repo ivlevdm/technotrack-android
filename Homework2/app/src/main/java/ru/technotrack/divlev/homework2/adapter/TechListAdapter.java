@@ -1,4 +1,4 @@
-package ru.technotrack.divlev.homework2;
+package ru.technotrack.divlev.homework2.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,8 +12,13 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class TechnologyAdapter extends BaseAdapter {
-    private static String TAG = TechnologyAdapter.class.getSimpleName();
+import ru.technotrack.divlev.homework2.R;
+import ru.technotrack.divlev.homework2.utils.DataStorage;
+import ru.technotrack.divlev.homework2.utils.PictureDownloader;
+import ru.technotrack.divlev.homework2.utils.TechnologyDescription;
+
+public class TechListAdapter extends BaseAdapter {
+    private static String TAG = TechListAdapter.class.getSimpleName();
 
     private List<TechnologyDescription> items = TechnologyDescription.getData();
     private PictureDownloader<ViewHolder> pictureDownloaderThread;
@@ -21,7 +26,7 @@ public class TechnologyAdapter extends BaseAdapter {
 
     private Context context;
 
-    public TechnologyAdapter(Context context, PictureDownloader<ViewHolder> downloader) {
+    public TechListAdapter(Context context, PictureDownloader<ViewHolder> downloader) {
         this.context = context;
         this.pictureDownloaderThread = downloader;
 

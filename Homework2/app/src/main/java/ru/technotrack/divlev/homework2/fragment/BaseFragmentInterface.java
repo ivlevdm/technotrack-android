@@ -1,4 +1,4 @@
-package ru.technotrack.divlev.homework2;
+package ru.technotrack.divlev.homework2.fragment;
 
 import android.view.View;
 
