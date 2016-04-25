@@ -25,12 +25,10 @@ public class ScreenSlidePageFragment extends BaseFragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.pager_item, container, false);
 
+        TextView tv = (TextView)rootView.findViewById(R.id.dict_word);
+        tv.setText(desc.getTitle());
+
         return rootView;
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        TextView tv = (TextView)findViewById(R.id.dict_word);
-        tv.setText(desc.getTitle());
-    }
 }

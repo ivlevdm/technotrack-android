@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
+import android.util.Pair;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -19,10 +20,10 @@ public class PictureDownloader<Token> extends HandlerThread {
     private static final int MESSAGE_DOWNLOAD = 0;
 
     private Handler handler;
-    private Map<Token, String> requestMap = Collections.synchronizedMap(new HashMap<Token, String>());
+    private Map<Token, Pair<Listener, String>> requestMap =
+            Collections.synchronizedMap(new HashMap<Token, Pair<Listener, String>>());
 
     private Handler responseHandler;
-    private Listener<Token> listener;
 
     private DataStorage<String, Bitmap> dataStorage = null;
 
@@ -30,17 +31,13 @@ public class PictureDownloader<Token> extends HandlerThread {
         void onPictureDownloaded(Token token, Bitmap picture);
     }
 
-    public void setListener(Listener<Token> listener) {
-        this.listener = listener;
-    }
-
     public PictureDownloader(Handler responseHandler) {
         super(TAG);
         this.responseHandler = responseHandler;
     }
 
-    public void queuePicture(Token token, String url) {
-        requestMap.put(token, url);
+    public void queuePicture(Token token, Listener listener, String url) {
+        requestMap.put(token, new Pair<Listener, String>(listener, url));
         handler.obtainMessage(MESSAGE_DOWNLOAD, token)
                 .sendToTarget();
     }
@@ -54,7 +51,7 @@ public class PictureDownloader<Token> extends HandlerThread {
                 if (msg.what == MESSAGE_DOWNLOAD) {
                     @SuppressWarnings("unchecked")
                     Token token = (Token) msg.obj;
-                    Log.i(TAG, "PictureDownloader request for url: " + requestMap.get(token));
+                    Log.i(TAG, "PictureDownloader request for url: " + requestMap.get(token).second);
                     handleRequest(token);
                 }
             }
@@ -63,7 +60,7 @@ public class PictureDownloader<Token> extends HandlerThread {
 
     private void handleRequest(final Token token){
 
-        final String url = requestMap.get(token);
+        final String url = requestMap.get(token).second;
 
         Bitmap bitMap = null;
         try {
@@ -89,7 +86,7 @@ public class PictureDownloader<Token> extends HandlerThread {
                 if (requestMap.get(token) == null || !requestMap.get(token).equals(url)) {
                     return;
                 }
-
+                Listener listener = requestMap.get(token).first;
                 requestMap.remove(token);
                 listener.onPictureDownloaded(token, bitmap);
             }

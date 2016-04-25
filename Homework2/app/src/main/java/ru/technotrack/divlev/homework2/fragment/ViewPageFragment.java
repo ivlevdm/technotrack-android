@@ -39,5 +39,6 @@ public class ViewPageFragment extends BaseFragment {
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new TechViewPagerAdapter(((TechListActivity)getActivity()).getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
+        mPager.setCurrentItem(currPos);
     }
 }

@@ -19,18 +19,24 @@ public class TechListFragment extends BaseFragment {
     private ListView listView;
     private PictureDownloader<TechListAdapter.ViewHolder> pictureDownloaderThread;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View result = inflater.inflate(R.layout.tech_list_fragment, container, false);
-        listView = (ListView) result.findViewById(R.id.tech_list_view);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
+        setRetainInstance(true);
         pictureDownloaderThread = new PictureDownloader<>(new Handler());
         pictureDownloaderThread.start();
         pictureDownloaderThread.setDataStorage(new LruCacheBitmapStorage());
         pictureDownloaderThread.getLooper();
 
         Log.i(TAG, "pictureDownloaderThread started");
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View result = inflater.inflate(R.layout.tech_list_fragment, container, false);
+        listView = (ListView) result.findViewById(R.id.tech_list_view);
 
         return result;
     }
