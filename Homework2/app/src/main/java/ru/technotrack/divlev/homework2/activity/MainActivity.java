@@ -64,8 +64,12 @@ public class MainActivity extends Activity {
 
     private void runListActivity() {
         if (isJsonParsed && isTimerOver) {
-            Intent intent = new Intent(getApplicationContext(), TechListActivity.class);
-            startActivity(intent);
+            if (TechnologyDescription.getData() != null) {
+                Intent intent = new Intent(getApplicationContext(), TechListActivity.class);
+                startActivity(intent);
+            } else {
+                Log.i(TAG, "Technology description is not downloaded.");
+            }
             finish();
         }
     }

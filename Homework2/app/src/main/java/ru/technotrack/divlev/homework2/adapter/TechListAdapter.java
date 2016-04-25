@@ -85,6 +85,7 @@ public class TechListAdapter extends BaseAdapter {
     }
 
 
+
     private void setImageToHolder(ViewHolder holder, Bitmap picture) {
         if (picture != null) {
             holder.img.setImageBitmap(picture);

@@ -1,8 +1,8 @@
 package ru.technotrack.divlev.homework2.fragment;
 
-import android.app.Fragment;
-import android.view.View;
 
+import android.support.v4.app.Fragment;
+import android.view.View;
 
 public abstract class BaseFragment<ParentActivity extends BaseFragmentInterface> extends Fragment {
 

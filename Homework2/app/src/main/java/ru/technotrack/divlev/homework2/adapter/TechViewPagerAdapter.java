@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.List;
 
+import ru.technotrack.divlev.homework2.fragment.ScreenSlidePageFragment;
 import ru.technotrack.divlev.homework2.utils.TechnologyDescription;
 
 
@@ -20,7 +21,7 @@ public class TechViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return null;
+        return ScreenSlidePageFragment.create(items.get(position));
     }
 
     @Override

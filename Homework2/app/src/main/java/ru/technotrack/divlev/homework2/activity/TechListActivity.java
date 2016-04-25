@@ -1,7 +1,7 @@
 package ru.technotrack.divlev.homework2.activity;
 
-import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import ru.technotrack.divlev.homework2.fragment.BaseFragment;
@@ -23,7 +23,7 @@ public class TechListActivity extends AppCompatActivity implements BaseFragmentI
             return;
         }
 
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.tech_list_fragment, baseFragment)
                 .addToBackStack(null)
                 .commit();

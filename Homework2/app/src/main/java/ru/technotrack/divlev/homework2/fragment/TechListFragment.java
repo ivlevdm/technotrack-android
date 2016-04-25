@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import ru.technotrack.divlev.homework2.utils.LruCacheBitmapStorage;
@@ -37,8 +38,16 @@ public class TechListFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         listView.setAdapter(new TechListAdapter(getActivity(), pictureDownloaderThread));
+        listView.setOnItemClickListener(onListViewItemClickListener);
         super.onViewCreated(view, savedInstanceState);
     }
+
+    private final AdapterView.OnItemClickListener onListViewItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            applyFragment(ViewPageFragment.create(position));
+        }
+    };
 
     @Override
     public void onDestroy() {
