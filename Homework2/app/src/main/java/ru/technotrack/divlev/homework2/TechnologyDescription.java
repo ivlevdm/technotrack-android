@@ -5,12 +5,13 @@ import android.content.Context;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 public class TechnologyDescription {
-    private int id;
+    static private List<TechnologyDescription> data = null;
+
     private String title;
     private String pictureUrl;
     private String info;
@@ -20,7 +21,7 @@ public class TechnologyDescription {
             throw new IllegalArgumentException(context.getString(R.string.json_exception_msg));
         }
 
-        List<TechnologyDescription> data = new LinkedList<>();
+        List<TechnologyDescription> data = new ArrayList<>();
         JSONObject json = new JSONObject(jsonString).getJSONObject("technology");
         Iterator<String> iter = json.keys();
 
@@ -29,9 +30,8 @@ public class TechnologyDescription {
             JSONObject technologyJson = json.getJSONObject(key);
             TechnologyDescription technology = new TechnologyDescription();
 
-            technology.setId(technologyJson.getInt("id"));
             technology.setTitle(technologyJson.getString("title"));
-            technology.setPictureUrl(technologyJson.getString("picture"));
+            technology.setPictureUrl(context.getString(R.string.url_base) + technologyJson.getString("picture"));
             if (technologyJson.has("info")) {
                 technology.setInfo(technologyJson.getString("info"));
             }
@@ -42,15 +42,15 @@ public class TechnologyDescription {
         return data;
     }
 
+    static public void initData(List<TechnologyDescription> data) {
+        TechnologyDescription.data = data;
+    }
+
+    static public List<TechnologyDescription> getData() {
+        return data;
+    }
+
     public TechnologyDescription() {}
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;

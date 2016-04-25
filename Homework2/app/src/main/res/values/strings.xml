@@ -3,4 +3,5 @@
     <string name="json_url">http://mobevo.ext.terrhq.ru/shr/j/ru/technology.js</string>
     <string name="json_exception_msg">Json string is null.</string>
     <string name="main_activity_pic">Main activity picture</string>
+    <string name="url_base">http://mobevo.ext.terrhq.ru/</string>
 </resources>

@@ -9,4 +9,10 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ru.technotrack.divlev.homework2.TechListActivity">
 
+    <FrameLayout
+        android:id="@+id/tech_list_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </FrameLayout>
+
 </RelativeLayout>

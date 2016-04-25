@@ -60,7 +60,7 @@ public class MainActivity extends Activity {
 
     private void runListActivity() {
         if (isJsonParsed && isTimerOver) {
-            Intent intent = new Intent(this, TechListActivity.class);
+            Intent intent = new Intent(getApplicationContext(), TechListActivity.class);
             startActivity(intent);
             finish();
         }
@@ -107,7 +107,8 @@ public class MainActivity extends Activity {
             try {
                 String jsonString = HttpDownloader.getUrlString(getString(R.string.json_url));
                 List<TechnologyDescription> data =
-                        TechnologyDescription.parseFromJson( getApplicationContext(), jsonString);
+                        TechnologyDescription.parseFromJson(getApplicationContext(), jsonString);
+                TechnologyDescription.initData(data);
                 //Log.d(TAG, jsonString);
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
