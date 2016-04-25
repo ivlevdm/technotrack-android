@@ -23,7 +23,13 @@ public class TechListAdapter extends BaseAdapter {
     private List<TechnologyDescription> items = TechnologyDescription.getData();
     private PictureDownloader<ViewHolder> pictureDownloaderThread;
     private DataStorage<String, Bitmap> dataStorage = null;
-    private PictureDownloader.Listener listener;
+    private static PictureDownloader.Listener listener = new PictureDownloader.Listener<ViewHolder>() {
+        @Override
+        public void onPictureDownloaded(ViewHolder holder, Bitmap picture) {
+            setImageToHolder(holder, picture);
+            Log.i(TAG, "Holder img should be changed.");
+        }
+    };
 
     private Context context;
 
@@ -32,13 +38,6 @@ public class TechListAdapter extends BaseAdapter {
         this.pictureDownloaderThread = downloader;
 
         this.dataStorage = pictureDownloaderThread.getDataStorage();
-
-        this.listener = new PictureDownloader.Listener<ViewHolder>() {
-            @Override
-            public void onPictureDownloaded(ViewHolder holder, Bitmap picture) {
-                setImageToHolder(holder, picture);
-            }
-        };
     }
 
     @Override
@@ -87,13 +86,13 @@ public class TechListAdapter extends BaseAdapter {
 
 
 
-    private void setImageToHolder(ViewHolder holder, Bitmap picture) {
+    private static void setImageToHolder(ViewHolder holder, Bitmap picture) {
         if (picture != null) {
             holder.img.setImageBitmap(picture);
-            Log.i(TAG, "Image for holder.coverSmall was changed");
+            Log.i(TAG, "Holder img was changed");
         } else {
             holder.img.setImageResource(R.drawable.wtf);
-            Log.e(TAG, "Image for holder.coverSmall was changed by FailImage");
+            Log.e(TAG, "Holder img was changed by FailImage");
         }
     }
 

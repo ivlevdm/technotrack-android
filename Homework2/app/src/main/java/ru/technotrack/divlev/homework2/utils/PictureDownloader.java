@@ -20,8 +20,8 @@ public class PictureDownloader<Token> extends HandlerThread {
     private static final int MESSAGE_DOWNLOAD = 0;
 
     private Handler handler;
-    private Map<Token, Pair<Listener, String>> requestMap =
-            Collections.synchronizedMap(new HashMap<Token, Pair<Listener, String>>());
+    private Map<Token, Pair<Listener<Token>, String>> requestMap =
+            Collections.synchronizedMap(new HashMap<Token, Pair<Listener<Token>, String>>());
 
     private Handler responseHandler;
 
@@ -37,7 +37,7 @@ public class PictureDownloader<Token> extends HandlerThread {
     }
 
     public void queuePicture(Token token, Listener listener, String url) {
-        requestMap.put(token, new Pair<Listener, String>(listener, url));
+        requestMap.put(token, new Pair<Listener<Token>, String>(listener, url));
         handler.obtainMessage(MESSAGE_DOWNLOAD, token)
                 .sendToTarget();
     }
@@ -86,9 +86,9 @@ public class PictureDownloader<Token> extends HandlerThread {
                 if (requestMap.get(token) == null || !requestMap.get(token).equals(url)) {
                     return;
                 }
-                Listener listener = requestMap.get(token).first;
-                requestMap.remove(token);
+                Listener<Token> listener = requestMap.get(token).first;
                 listener.onPictureDownloaded(token, bitmap);
+                requestMap.remove(token);
             }
         });
     }
