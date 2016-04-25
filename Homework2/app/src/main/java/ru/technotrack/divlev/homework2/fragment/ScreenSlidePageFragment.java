@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ru.technotrack.divlev.homework2.R;
-import ru.technotrack.divlev.homework2.fragment.BaseFragment;
 
 public class ScreenSlidePageFragment extends BaseFragment {
 
