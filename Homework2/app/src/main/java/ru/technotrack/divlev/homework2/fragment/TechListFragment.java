@@ -51,7 +51,7 @@ public class TechListFragment extends BaseFragment {
     private final AdapterView.OnItemClickListener onListViewItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            applyFragment(ViewPageFragment.create(position));
+            applyFragment(ViewPageFragment.create(position, pictureDownloaderThread.getDataStorage()));
         }
     };
 

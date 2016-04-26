@@ -23,13 +23,6 @@ public class TechListAdapter extends BaseAdapter {
     private List<TechnologyDescription> items = TechnologyDescription.getData();
     private PictureDownloader<ViewHolder> pictureDownloaderThread;
     private DataStorage<String, Bitmap> dataStorage = null;
-    private static PictureDownloader.Listener listener = new PictureDownloader.Listener<ViewHolder>() {
-        @Override
-        public void onPictureDownloaded(ViewHolder holder, Bitmap picture) {
-            setImageToHolder(holder, picture);
-            Log.i(TAG, "Holder img should be changed.");
-        }
-    };
 
     private Context context;
 
@@ -38,6 +31,13 @@ public class TechListAdapter extends BaseAdapter {
         this.pictureDownloaderThread = downloader;
 
         this.dataStorage = pictureDownloaderThread.getDataStorage();
+
+        pictureDownloaderThread.setListener(new PictureDownloader.Listener<ViewHolder>() {
+            @Override
+            public void onPictureDownloaded(ViewHolder holder, Bitmap picture) {
+                setImageToHolder(holder, picture);
+            }
+        });
     }
 
     @Override
@@ -79,7 +79,7 @@ public class TechListAdapter extends BaseAdapter {
             setImageToHolder(holder, dataStorage.get(pictureUrl));
         } else {
             setImageToHolder(holder, null);
-            pictureDownloaderThread.queuePicture(holder, listener, pictureUrl);
+            pictureDownloaderThread.queuePicture(holder, pictureUrl);
         }
         return view;
     }
