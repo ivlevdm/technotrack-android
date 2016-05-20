@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Messenger</string>
+    <string name="logo">logo</string>
+    <string name="login.email">Email</string>
+</resources>
