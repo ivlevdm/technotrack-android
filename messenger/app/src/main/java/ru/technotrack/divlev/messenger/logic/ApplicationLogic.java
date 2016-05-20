@@ -3,12 +3,14 @@ package ru.technotrack.divlev.messenger.logic;
 import android.os.HandlerThread;
 
 import ru.technotrack.divlev.messenger.MainActivityBase;
+import ru.technotrack.divlev.messenger.fragment.welcome.WelcomeLogic;
 
-public class ApplicationLogic {
+public class ApplicationLogic implements WelcomeLogic {
     private static ApplicationLogic appLogic;
     private static String TAG = ApplicationLogic.class.getSimpleName().toUpperCase();
 
     private MainActivityBase activity;
+    private WelcomeLogic.OnNetworkConnectLister welcomeLister;
 
     public static ApplicationLogic instance() {
         if (appLogic == null) {
@@ -20,9 +22,9 @@ public class ApplicationLogic {
 
     private ApplicationLogic() {}
 
-    private class ApplicationLogicHandlerTread extends HandlerThread {
+    private class ApplicationLogicHandlerThread extends HandlerThread {
 
-        public ApplicationLogicHandlerTread(String name) {
+        public ApplicationLogicHandlerThread(String name) {
             super(name);
         }
     }
@@ -32,6 +34,11 @@ public class ApplicationLogic {
     }
 
     public void startApp() {
+
+    }
+
+    @Override
+    public void setListener(OnNetworkConnectLister listener) {
 
     }
 }

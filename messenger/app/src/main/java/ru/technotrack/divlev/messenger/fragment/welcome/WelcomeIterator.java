@@ -3,7 +3,9 @@ package ru.technotrack.divlev.messenger.fragment.welcome;
 
 public interface WelcomeIterator {
 
-    interface OnNetworkConnectFinishedListener {
-        void onConnectError();
+    interface OnNetworkConnectListener {
+        void onConnectStart();
+
+        void onConnectError(String msg);
     }
 }
