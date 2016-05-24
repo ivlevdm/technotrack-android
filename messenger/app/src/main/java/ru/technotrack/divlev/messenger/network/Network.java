@@ -1,15 +1,18 @@
 package ru.technotrack.divlev.messenger.network;
 
 
-public class Network {
-    private static Network network;
+public interface Network {
+    interface NetworkListener {
+        void onNetworkError(String msg);
 
-    private Network() {}
-
-    public static Network instance() {
-        if (network == null) {
-            network = new Network();
-        }
-        return network;
+        void onReceiveMessage(String msg);
     }
+
+    void start();
+
+    void finish();
+
+    void send(String msg);
+
+    void setListener(NetworkListener listener);
 }

@@ -1,7 +1,7 @@
 package ru.technotrack.divlev.messenger.fragment.welcome;
 
 
-public interface WelcomeIterator {
+public interface WelcomeInteractor {
 
     interface OnNetworkConnectListener {
         void onConnectStart();

@@ -1,7 +1,6 @@
 package ru.technotrack.divlev.messenger.fragment.login;
 
-
-public interface LoginLogic {
+public interface LoginInteractor {
 
     interface OnLoginFinishedListener {
         void onUsernameError(String msg);
@@ -9,10 +8,9 @@ public interface LoginLogic {
         void onPasswordError(String msg);
 
         void onConnectionError(String msg);
+
+        void onSuccess(String username, String password);
     }
 
-    void login(String username, String password, OnLoginFinishedListener listener);
-
-    void openRegisterScreen();
+    void validateCredentials(String username, String password, OnLoginFinishedListener listener);
 }
-

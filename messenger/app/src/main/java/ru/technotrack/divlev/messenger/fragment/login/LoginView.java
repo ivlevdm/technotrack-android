@@ -6,9 +6,9 @@ public interface LoginView {
 
     void hideProgress();
 
-    void setUserNameError();
+    void setUserNameError(String msg);
 
-    void setPasswordError();
+    void setPasswordError(String msg);
 
-    void showConnectionError();
+    void showConnectionError(String msg);
 }

@@ -1,10 +1,10 @@
 package ru.technotrack.divlev.messenger.fragment.welcome;
 
 
-public class WelcomeIteratorImpl implements WelcomeIterator, WelcomeLogic.OnNetworkConnectLister {
-    private WelcomeIterator.OnNetworkConnectListener listener;
+public class WelcomeInteractorImpl implements WelcomeInteractor, WelcomeLogic.OnNetworkConnectListener {
+    private WelcomeInteractor.OnNetworkConnectListener listener;
 
-    public WelcomeIteratorImpl(OnNetworkConnectListener listener) {
+    public WelcomeInteractorImpl(OnNetworkConnectListener listener) {
         this.listener = listener;
     }
 

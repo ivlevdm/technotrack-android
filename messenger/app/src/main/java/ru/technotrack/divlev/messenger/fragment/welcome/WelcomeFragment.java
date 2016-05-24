@@ -21,7 +21,7 @@ public class WelcomeFragment extends BaseFragment implements WelcomeView {
         super.onCreate(savedInstanceState);
 
         progressBar = (ProgressBar) findViewById(R.id.progress);
-        presenter = new WelcomePresenterImpl();
+        presenter = new WelcomePresenterImpl(this);
     }
 
     @Nullable
