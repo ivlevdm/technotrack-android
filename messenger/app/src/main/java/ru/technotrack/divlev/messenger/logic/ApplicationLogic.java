@@ -22,6 +22,8 @@ public class ApplicationLogic implements Network.NetworkListener, WelcomeLogic, 
     private Network network;
     private ApplicationLogicLooper looper;
 
+    private final int SERVER_ANSWER = 0;
+
     public static ApplicationLogic instance() {
         if (appLogic == null) {
             appLogic = new ApplicationLogic();
@@ -44,10 +46,19 @@ public class ApplicationLogic implements Network.NetworkListener, WelcomeLogic, 
             handler = new Handler() {
                 @Override
                 public void handleMessage(Message msg) {
-                    if (msg.what == MESSAGE_DOWNLOAD) {
+                    if (msg.what == SERVER_ANSWER) {
+                        handleServerAnswer((String)msg.obj);
                     }
                 }
             };
+        }
+
+        public void queueServerAnswer(String answer) {
+            handler.obtainMessage(SERVER_ANSWER, answer).sendToTarget();
+        }
+
+        private void handleServerAnswer(String answer) {
+            Log.i(TAG, "Handle a server answer:" + answer);
         }
     }
 
@@ -65,11 +76,33 @@ public class ApplicationLogic implements Network.NetworkListener, WelcomeLogic, 
         looper = new ApplicationLogicLooper(new Handler());
 
         activity.applyFragment(new WelcomeFragment());
-
+        looper.getLooper();
+        looper.start();
+        network.start();
     }
 
     @Override
     public void setListener(OnNetworkConnectListener listener) {
+
+    }
+
+    @Override
+    public void onReceiveMessage(String msg) {
+        looper.queueServerAnswer(msg);
+    }
+
+    @Override
+    public void onNetworkError(String msg) {
+
+    }
+
+    @Override
+    public void login(String username, String password, OnLoginFinishedListener listener) {
+
+    }
+
+    @Override
+    public void openRegisterScreen() {
 
     }
 }

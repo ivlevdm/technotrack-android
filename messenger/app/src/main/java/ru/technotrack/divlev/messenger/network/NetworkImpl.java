@@ -1,6 +1,7 @@
 package ru.technotrack.divlev.messenger.network;
 
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -18,7 +19,7 @@ import ru.technotrack.divlev.messenger.config.ApplicationConfig;
 import ru.technotrack.divlev.messenger.util.JSONUtil;
 
 public class NetworkImpl implements Network {
-    private static NetworkImpl network;
+    private static final NetworkImpl network = new NetworkImpl();
     private static String TAG = NetworkImpl.class.getSimpleName().toUpperCase();
 
     private NetworkListener listener;
@@ -27,6 +28,7 @@ public class NetworkImpl implements Network {
     private Queue<String> messageQueue;
     private Thread receiver;
     private Thread sender;
+    private AsyncTask<Void, Void, Void> openSocketTask;
 
     private class MessageReceiver implements Runnable {
         private final InputStream inStream;
@@ -83,7 +85,9 @@ public class NetworkImpl implements Network {
             while (!stop) {
                 if (messageQueue.isEmpty()) {
                     try {
-                        wait();
+                        synchronized (network) {
+                            network.wait();
+                        }
                     } catch (InterruptedException e) {
                         Log.e(TAG, e.getMessage());
                     }
@@ -107,9 +111,6 @@ public class NetworkImpl implements Network {
     private NetworkImpl() {}
 
     public static NetworkImpl instance() {
-        if (network == null) {
-            network = new NetworkImpl();
-        }
         return network;
     }
 
@@ -123,20 +124,38 @@ public class NetworkImpl implements Network {
         messageQueue = new SynchronousQueue<>();
         stop = false;
 
-        try {
-            socket = new Socket(ApplicationConfig.SERVER_ADDRESS, ApplicationConfig.SERVER_PORT);
-            receiver = new Thread(new MessageReceiver());
-            sender = new Thread(new MessageSender());
-        } catch (IOException e) {
-            listener.onNetworkError("Couldn't open socket.");
-            Log.e(TAG, e.getMessage());
+        openSocketTask = new ConnectServerTask();
+        openSocketTask.execute();
+    }
+
+    class ConnectServerTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Log.i(TAG, "Start to open a socket.");
+                network.socket = new Socket(ApplicationConfig.SERVER_ADDRESS,
+                        ApplicationConfig.SERVER_PORT);
+
+                receiver = new Thread(new MessageReceiver());
+                sender = new Thread(new MessageSender());
+
+                receiver.start();
+                sender.start();
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            return null;
         }
+
     }
 
     @Override
     public void send(String msg) {
         messageQueue.add(msg);
-        sender.notify();
+        synchronized (network) {
+            network.notify();
+        }
     }
 
     @Override
