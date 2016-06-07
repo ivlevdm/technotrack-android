@@ -3,6 +3,7 @@ package ru.technotrack.divlev.messenger.util;
 
 import android.util.Log;
 
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
@@ -20,6 +21,18 @@ public class JSONUtil {
             return false;
         }
         return true;
+    }
+
+    public static String prepareLoginJson(String login, String pass_md5) {
+        JsonObject action = new JsonObject();
+        JsonObject data = new JsonObject();
+
+        action.addProperty("action", "auth");
+        data.addProperty("login", login);
+        data.addProperty("pass", pass_md5);
+        action.add("data", data);
+
+        return action.toString();
     }
 
 }

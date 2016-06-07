@@ -2,4 +2,5 @@
     <string name="app_name">Messenger</string>
     <string name="logo">logo</string>
     <string name="login.email">Email</string>
+    <string name="saved_login">saved_login</string>
 </resources>

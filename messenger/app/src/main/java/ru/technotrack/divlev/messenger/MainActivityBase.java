@@ -10,6 +10,7 @@ import ru.technotrack.divlev.messenger.logic.ApplicationLogic;
 
 public class MainActivityBase extends AppCompatActivity implements BaseFragmentActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
