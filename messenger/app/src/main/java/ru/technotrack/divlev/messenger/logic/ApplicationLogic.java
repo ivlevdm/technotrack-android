@@ -10,7 +10,6 @@ import android.util.Log;
 import android.util.Pair;
 
 import ru.technotrack.divlev.messenger.MainActivityBase;
-import ru.technotrack.divlev.messenger.R;
 import ru.technotrack.divlev.messenger.fragment.login.LoginFragment;
 import ru.technotrack.divlev.messenger.fragment.login.LoginLogic;
 import ru.technotrack.divlev.messenger.fragment.welcome.WelcomeFragment;
@@ -24,7 +23,7 @@ public class ApplicationLogic implements Network.NetworkListener, WelcomeLogic, 
     private static String TAG = ApplicationLogic.class.getSimpleName().toUpperCase();
 
     private MainActivityBase activity;
-    private OnNetworkConnectListener welcomeLister;
+    private WelcomeLogicListener welcomeLister;
     private Network network;
     private ApplicationLogicLooper looper;
 
@@ -154,12 +153,14 @@ public class ApplicationLogic implements Network.NetworkListener, WelcomeLogic, 
 
         looper.start();
         looper.getLooper();
+    }
 
+    public void startNetwork() {
         looper.queueStartNetwork();
     }
 
     @Override
-    public void setListener(OnNetworkConnectListener listener) {
+    public void setListener(WelcomeLogicListener listener) {
         this.welcomeLister = listener;
     }
 

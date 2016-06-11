@@ -15,6 +15,9 @@ public class MainActivityBase extends AppCompatActivity implements BaseFragmentA
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ApplicationLogic.instance().setActivity(this);
+        ApplicationLogic.instance().startApp();
     }
 
     @Override
@@ -33,7 +36,7 @@ public class MainActivityBase extends AppCompatActivity implements BaseFragmentA
     @Override
     protected void onResume() {
         super.onResume();
-        ApplicationLogic.instance().setActivity(this);
-        ApplicationLogic.instance().startApp();
+
+        ApplicationLogic.instance().startNetwork();
     }
 }

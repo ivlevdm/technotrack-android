@@ -1,11 +1,11 @@
 package ru.technotrack.divlev.messenger.fragment.welcome;
 
 public interface WelcomeLogic {
-    interface OnNetworkConnectListener {
+    interface WelcomeLogicListener {
         void onConnectStart();
 
         void onConnectError(String msg);
     }
 
-    void setListener(OnNetworkConnectListener listener);
+    void setListener(WelcomeLogicListener listener);
 }

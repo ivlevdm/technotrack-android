@@ -23,7 +23,22 @@ public class WelcomeFragment extends BaseFragment implements WelcomeView {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         progressBar = (ProgressBar) findViewById(R.id.progress);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (presenter.isConnecting()) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
     }
 
     @Nullable

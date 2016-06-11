@@ -3,9 +3,11 @@ package ru.technotrack.divlev.messenger.fragment.welcome;
 
 public interface WelcomeInteractor {
 
-    interface OnNetworkConnectListener {
-        void onConnectStart();
-
+    interface WelcomeInteractorListener {
         void onConnectError(String msg);
+
+        void onConnectionChange(boolean is_connecting);
     }
+
+    boolean isConnecting();
 }
