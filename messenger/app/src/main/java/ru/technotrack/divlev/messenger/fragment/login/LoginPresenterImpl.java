@@ -2,11 +2,12 @@ package ru.technotrack.divlev.messenger.fragment.login;
 
 
 import ru.technotrack.divlev.messenger.logic.ApplicationLogic;
+import ru.technotrack.divlev.messenger.logic.ApplicationLogicImpl;
 
 public class LoginPresenterImpl implements LoginPresenter, LoginInteractor.OnLoginFinishedListener {
     private LoginView view;
     private LoginInteractor interactor;
-    private LoginLogic logic = ApplicationLogic.instance();
+    private ApplicationLogic logic = ApplicationLogicImpl.instance();
 
     public LoginPresenterImpl(LoginView view) {
         this.view = view;

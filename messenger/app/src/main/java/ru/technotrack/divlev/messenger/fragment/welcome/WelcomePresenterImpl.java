@@ -1,20 +1,22 @@
 package ru.technotrack.divlev.messenger.fragment.welcome;
 
 
+import ru.technotrack.divlev.messenger.fragment.login.LoginFragment;
 import ru.technotrack.divlev.messenger.logic.ApplicationLogic;
+import ru.technotrack.divlev.messenger.logic.ApplicationLogicImpl;
 
 public class WelcomePresenterImpl implements WelcomePresenter,
         WelcomeInteractor.WelcomeInteractorListener {
     private WelcomeView view;
     private WelcomeInteractor interactor;
-    private WelcomeLogic logic;
+    private ApplicationLogic logic;
 
     public WelcomePresenterImpl(WelcomeView view) {
         this.view = view;
 
         interactor = new WelcomeInteractorImpl(this);
-        logic = ApplicationLogic.instance();
-        logic.setListener((WelcomeLogic.WelcomeLogicListener) interactor);
+        logic = ApplicationLogicImpl.instance();
+        logic.setListener((ApplicationLogic.ApplicationLogicListener)interactor);
     }
 
 
@@ -27,6 +29,22 @@ public class WelcomePresenterImpl implements WelcomePresenter,
     @Override
     public boolean isConnecting() {
         return interactor.isConnecting();
+    }
+
+    @Override
+    public void onLoginFail() {
+        view.hideProgress();
+        logic.getActivity().finishFragment();
+        logic.getActivity().applyFragment(new LoginFragment());
+    }
+
+    @Override
+    public void onLoginSuccess() {
+    }
+
+    @Override
+    public void onConnectionFinished() {
+        logic.restoreConnection();
     }
 
     @Override

@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import ru.technotrack.divlev.messenger.fragment.BaseFragment;
 import ru.technotrack.divlev.messenger.fragment.BaseFragmentActivity;
-import ru.technotrack.divlev.messenger.logic.ApplicationLogic;
+import ru.technotrack.divlev.messenger.logic.ApplicationLogicImpl;
 
 public class MainActivityBase extends AppCompatActivity implements BaseFragmentActivity {
 
@@ -16,8 +16,8 @@ public class MainActivityBase extends AppCompatActivity implements BaseFragmentA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ApplicationLogic.instance().setActivity(this);
-        ApplicationLogic.instance().startApp();
+        ApplicationLogicImpl.instance().setActivity(this);
+        ApplicationLogicImpl.instance().startApp();
     }
 
     @Override
@@ -37,6 +37,6 @@ public class MainActivityBase extends AppCompatActivity implements BaseFragmentA
     protected void onResume() {
         super.onResume();
 
-        ApplicationLogic.instance().startNetwork();
+        ApplicationLogicImpl.instance().startNetwork();
     }
 }
