@@ -17,13 +17,13 @@ public class WelcomeFragment extends BaseFragment implements WelcomeView {
     private WelcomePresenter presenter;
 
     public WelcomeFragment() {
-        progressBar = (ProgressBar) findViewById(R.id.progress);
         presenter = new WelcomePresenterImpl(this);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        progressBar = (ProgressBar) findViewById(R.id.progress);
     }
 
     @Nullable

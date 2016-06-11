@@ -24,7 +24,7 @@ public class WelcomePresenterImpl implements WelcomePresenter,
 
     @Override
     public void onConnectError(String msg) {
-        view.hideProgress();
+        //view.hideProgress();
         view.showError(msg);
     }
 }

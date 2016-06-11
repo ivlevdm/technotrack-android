@@ -31,6 +31,7 @@ public class ApplicationLogic implements Network.NetworkListener, WelcomeLogic, 
     private final int MESSAGE_SERVER_ANSWER = 0;
     private final int MESSAGE_RESTORE_CONNECTION = 1;
     private final int MESSAGE_LOGIN = 2;
+    private final int MESSAGE_START_NETWORK = 3;
 
     public static ApplicationLogic instance() {
         if (appLogic == null) {
@@ -63,6 +64,9 @@ public class ApplicationLogic implements Network.NetworkListener, WelcomeLogic, 
                             break;
                         case MESSAGE_LOGIN:
                             handleLogin((Pair<String, String>)msg.obj);
+                            break;
+                        case MESSAGE_START_NETWORK:
+                            handleStartNetwork();
                             break;
                         default:
                             Log.e(TAG, "Unknown message.");
@@ -113,6 +117,24 @@ public class ApplicationLogic implements Network.NetworkListener, WelcomeLogic, 
                 }
             });
         }
+
+        private void queueStartNetwork() {
+            handler.obtainMessage(MESSAGE_START_NETWORK).sendToTarget();
+        }
+
+        private void handleStartNetwork() {
+            network.start();
+            processStartNetwork();
+        }
+
+        private void processStartNetwork() {
+            responseHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    welcomeLister.onConnectStart();
+                }
+            });
+        }
     }
 
 
@@ -130,12 +152,10 @@ public class ApplicationLogic implements Network.NetworkListener, WelcomeLogic, 
         network.setListener(this);
         looper = new ApplicationLogicLooper(new Handler());
 
-        looper.getLooper();
         looper.start();
+        looper.getLooper();
 
-        welcomeLister.onConnectError("Hello!");
-        network.start();
-        //looper.queueRestoreConnection();
+        looper.queueStartNetwork();
     }
 
     @Override
