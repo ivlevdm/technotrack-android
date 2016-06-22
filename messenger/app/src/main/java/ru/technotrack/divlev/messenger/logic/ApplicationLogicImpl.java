@@ -12,8 +12,8 @@ import android.util.Pair;
 import com.google.gson.JsonObject;
 
 import ru.technotrack.divlev.messenger.MainActivityBase;
+import ru.technotrack.divlev.messenger.config.ApplicationConfig;
 import ru.technotrack.divlev.messenger.fragment.BaseFragmentActivity;
-import ru.technotrack.divlev.messenger.fragment.login.LoginFragment;
 import ru.technotrack.divlev.messenger.fragment.welcome.WelcomeFragment;
 import ru.technotrack.divlev.messenger.network.Network;
 import ru.technotrack.divlev.messenger.network.NetworkImpl;
@@ -22,6 +22,7 @@ import ru.technotrack.divlev.messenger.util.JSONUtil;
 public class ApplicationLogicImpl implements ApplicationLogic, Network.NetworkListener {
     private static ApplicationLogicImpl appLogic;
     private static String TAG = ApplicationLogicImpl.class.getSimpleName().toUpperCase();
+    private static boolean isNetStarted = false;
 
     private MainActivityBase activity;
 
@@ -33,6 +34,9 @@ public class ApplicationLogicImpl implements ApplicationLogic, Network.NetworkLi
     private final int MESSAGE_RESTORE_CONNECTION = 1;
     private final int MESSAGE_LOGIN = 2;
     private final int MESSAGE_START_NETWORK = 3;
+    private final int MESSAGE_REGISTER = 4;
+    private final int MESSAGE_RESTART_NETWORK = 5;
+    private final int MESSAGE_UPLOAD_CHATLIST = 6;
 
     public static ApplicationLogicImpl instance() {
         if (appLogic == null) {
@@ -44,6 +48,18 @@ public class ApplicationLogicImpl implements ApplicationLogic, Network.NetworkLi
     private class ApplicationLogicLooper extends HandlerThread {
         private Handler handler;
         private Handler responseHandler;
+
+        private class UserRegistrationInfo {
+            String login;
+            String pass;
+            String nickname;
+
+            public UserRegistrationInfo(String login, String pass, String nickname) {
+                this.login = login;
+                this.pass = pass;
+                this.nickname = nickname;
+            }
+        }
 
         public ApplicationLogicLooper(Handler responseHandler) {
             super(TAG);
@@ -69,11 +85,32 @@ public class ApplicationLogicImpl implements ApplicationLogic, Network.NetworkLi
                         case MESSAGE_START_NETWORK:
                             handleStartNetwork();
                             break;
+                        case MESSAGE_REGISTER:
+                            handleRegistration((UserRegistrationInfo) msg.obj);
+                            break;
+                        case MESSAGE_RESTART_NETWORK:
+                            handleRestartNetwork();
+                            break;
+                        case MESSAGE_UPLOAD_CHATLIST:
+                            handleUploadChatList();
+                            break;
                         default:
                             Log.e(TAG, "Unknown message.");
                     }
                 }
             };
+        }
+
+        private void storeLoginInfo(String login, String pass) {
+            SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("saved_login", login);
+            editor.putString("saved_pass", pass);
+            editor.apply();
+        }
+
+        private void resetLoginInfo() {
+            storeLoginInfo("", "");
         }
 
         private void queueServerAnswer(String answer) {
@@ -85,15 +122,44 @@ public class ApplicationLogicImpl implements ApplicationLogic, Network.NetworkLi
 
             Pair<String, JsonObject> message = JSONUtil.parseMessage(answer);
 
-            listener.onMessageReceived(message.first, message.second);
+            if (message.first.equals("auth") && JSONUtil.getDataStatus(message.second) != 0) {
+                resetLoginInfo();
+            }
+
+            //FIXME: dirty hack
+            if (message.first.equals("auth") && JSONUtil.getDataStatus(message.second) == 0) {
+                ApplicationConfig.cid = message.second.get("cid").getAsString();
+                ApplicationConfig.sid = message.second.get("sid").getAsString();
+            }
+
+            processServerAnswer(message);
+        }
+
+        private void processServerAnswer(final Pair<String, JsonObject> message) {
+            responseHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onMessageReceived(message.first, message.second);
+                }
+            });
         }
 
         private void queueLogin(String username, String pass) {
-            handler.obtainMessage(MESSAGE_LOGIN, new Pair<>(username, pass));
+            handler.obtainMessage(MESSAGE_LOGIN, new Pair<>(username, pass)).sendToTarget();
         }
 
         private void handleLogin(Pair<String, String> loginInfo) {
+            storeLoginInfo(loginInfo.first, loginInfo.second);
             network.send(JSONUtil.prepareLoginJson(loginInfo.first, loginInfo.second));
+        }
+
+        private void queueRegistration(String username, String pass, String nickname) {
+            UserRegistrationInfo info = new UserRegistrationInfo(username, pass, nickname);
+            handler.obtainMessage(MESSAGE_REGISTER, info).sendToTarget();
+        }
+
+        private void handleRegistration(UserRegistrationInfo info) {
+            network.send(JSONUtil.prepareRegisterJson(info.login, info.pass, info.nickname));
         }
 
         private void queueRestoreSession() {
@@ -108,6 +174,7 @@ public class ApplicationLogicImpl implements ApplicationLogic, Network.NetworkLi
             if (login.isEmpty() || pass.isEmpty()) {
                 Log.i(TAG, "A password or a login isn't stored.");
                 processMessageReceive("auth", JSONUtil.getLoginFailJson());
+                return;
             }
 
             queueLogin(login, pass);
@@ -117,9 +184,20 @@ public class ApplicationLogicImpl implements ApplicationLogic, Network.NetworkLi
             handler.obtainMessage(MESSAGE_START_NETWORK).sendToTarget();
         }
 
+        private void queueRestartNetwork() {
+            handler.obtainMessage(MESSAGE_RESTART_NETWORK).sendToTarget();
+        }
+
+        private void handleRestartNetwork() {
+            processNetworkStatusChange(ApplicationLogicListener.ConnectionState.ERROR, "");
+            network.finish();
+            network.start();
+            processNetworkStatusChange(ApplicationLogicListener.ConnectionState.CONNECTING, "");
+        }
+
         private void handleStartNetwork() {
             network.start();
-            processStartNetwork();
+            processNetworkStatusChange(ApplicationLogicListener.ConnectionState.CONNECTING, "");
         }
 
         private void processMessageReceive(final String action, final JsonObject data) {
@@ -131,14 +209,22 @@ public class ApplicationLogicImpl implements ApplicationLogic, Network.NetworkLi
             });
         }
 
-        private void processStartNetwork() {
+        private void processNetworkStatusChange(final ApplicationLogicListener.ConnectionState state,
+                                                final String msg) {
             responseHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    listener.onConnectionStateChange(
-                            ApplicationLogicListener.ConnectionState.CONNECTING, null);
+                    listener.onConnectionStateChange(state, msg);
                 }
             });
+        }
+
+        private void queueUploadChatList() {
+            handler.obtainMessage(MESSAGE_UPLOAD_CHATLIST).sendToTarget();
+        }
+
+        private void handleUploadChatList() {
+            network.send(JSONUtil.prepareChannelListJson(ApplicationConfig.cid, ApplicationConfig.sid));
         }
     }
 
@@ -162,7 +248,10 @@ public class ApplicationLogicImpl implements ApplicationLogic, Network.NetworkLi
     }
 
     public void startNetwork() {
+        if (isNetStarted)
+            return;
         looper.queueStartNetwork();
+        isNetStarted = true;
     }
 
     @Override
@@ -186,12 +275,30 @@ public class ApplicationLogicImpl implements ApplicationLogic, Network.NetworkLi
     }
 
     @Override
-    public void onNetworkError(String msg) {
-
+    public void onNetworkError(Network.NetworkErrorType error) {
+        switch (error) {
+            case SOCKET_IS_CLOSED:
+                looper.queueRestartNetwork();
+                break;
+            case SOCKET_OPENING_FAILED:
+                break;
+            default:
+                Log.e(TAG, "Unknown network error.");
+        }
     }
 
     @Override
     public void login(String username, String password) {
+        looper.queueLogin(username, password);
+    }
 
+    @Override
+    public void register(String username, String password, String nickname) {
+        looper.queueRegistration(username, password, nickname);
+    }
+
+    @Override
+    public void uploadChatList() {
+        looper.queueUploadChatList();
     }
 }

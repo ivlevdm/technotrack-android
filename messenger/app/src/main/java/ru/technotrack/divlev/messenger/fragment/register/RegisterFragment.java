@@ -1,4 +1,5 @@
-package ru.technotrack.divlev.messenger.fragment.login;
+package ru.technotrack.divlev.messenger.fragment.register;
+
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,16 +14,17 @@ import android.widget.Toast;
 import ru.technotrack.divlev.messenger.R;
 import ru.technotrack.divlev.messenger.fragment.BaseFragment;
 
-public class LoginFragment extends BaseFragment implements LoginView {
-    private LoginPresenter presenter;
+public class RegisterFragment extends BaseFragment implements RegisterView {
+    private RegisterPresenter presenter;
     private ProgressBar progressBar;
     private Button loginButton;
     private Button registerButton;
     private EditText login;
     private EditText password;
+    private EditText nickname;
 
-    public LoginFragment() {
-        presenter = new LoginPresenterImpl(this);
+    public RegisterFragment() {
+        presenter = new RegisterPresenterImpl(this);
     }
 
     @Override
@@ -32,13 +34,13 @@ public class LoginFragment extends BaseFragment implements LoginView {
         registerButton = (Button) findViewById(R.id.registerButton);
         login = (EditText) findViewById(R.id.loginText);
         password = (EditText) findViewById(R.id.passText);
+        nickname = (EditText) findViewById(R.id.nickText);
 
         loginButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        presenter.validateCredentials(login.getText().toString(),
-                                password.getText().toString());
+                        presenter.openLoginScreen();
                     }
                 }
         );
@@ -47,7 +49,8 @@ public class LoginFragment extends BaseFragment implements LoginView {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        presenter.openRegisterScreen();
+                        presenter.validateCredentials(login.getText().toString(),
+                                password.getText().toString(), nickname.getText().toString());
                     }
                 }
         );
@@ -56,7 +59,7 @@ public class LoginFragment extends BaseFragment implements LoginView {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View result = inflater.inflate(R.layout.login_fragment, container, false);
+        View result = inflater.inflate(R.layout.register_fragment, container, false);
         return result;
     }
 
@@ -70,10 +73,6 @@ public class LoginFragment extends BaseFragment implements LoginView {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
-    private void showMessage(String msg) {
-        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-    }
-
     @Override
     public void setUserNameError(String msg) {
         showMessage(msg);
@@ -85,7 +84,16 @@ public class LoginFragment extends BaseFragment implements LoginView {
     }
 
     @Override
+    public void setNicknameError(String msg) {
+        showMessage(msg);
+    }
+
+    @Override
     public void showConnectionError(String msg) {
         showMessage(msg);
+    }
+
+    private void showMessage(String msg) {
+        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
     }
 }

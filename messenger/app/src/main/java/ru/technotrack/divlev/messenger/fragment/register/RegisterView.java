@@ -6,11 +6,11 @@ public interface RegisterView {
 
     void hideProgress();
 
-    void setUserNameError();
+    void setUserNameError(String msg);
 
-    void setPasswordError();
+    void setPasswordError(String msg);
 
-    void setNicknameError();
+    void setNicknameError(String msg);
 
-    void showConnectionError();
+    void showConnectionError(String msg);
 }

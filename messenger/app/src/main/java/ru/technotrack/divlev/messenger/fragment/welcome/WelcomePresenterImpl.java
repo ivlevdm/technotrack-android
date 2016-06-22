@@ -1,6 +1,8 @@
 package ru.technotrack.divlev.messenger.fragment.welcome;
 
 
+import ru.technotrack.divlev.messenger.fragment.BaseFragmentActivity;
+import ru.technotrack.divlev.messenger.fragment.chatlist.ChatListFragment;
 import ru.technotrack.divlev.messenger.fragment.login.LoginFragment;
 import ru.technotrack.divlev.messenger.logic.ApplicationLogic;
 import ru.technotrack.divlev.messenger.logic.ApplicationLogicImpl;
@@ -40,6 +42,9 @@ public class WelcomePresenterImpl implements WelcomePresenter,
 
     @Override
     public void onLoginSuccess() {
+        BaseFragmentActivity activity = logic.getActivity();
+        activity.finishFragment();
+        activity.applyFragment(new ChatListFragment());
     }
 
     @Override

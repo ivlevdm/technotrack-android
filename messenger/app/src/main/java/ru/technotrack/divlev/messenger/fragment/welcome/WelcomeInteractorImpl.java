@@ -31,7 +31,9 @@ public class WelcomeInteractorImpl implements WelcomeInteractor, ApplicationLogi
                 break;
             case ERROR:
                 is_connecting = false;
-                listener.onConnectError(msg);
+                if (!msg.isEmpty()) {
+                    listener.onConnectError(msg);
+                }
                 break;
             default:
                 Log.e(TAG, "Unknown connection state.");

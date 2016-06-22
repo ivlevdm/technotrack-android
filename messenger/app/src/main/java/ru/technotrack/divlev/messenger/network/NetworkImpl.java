@@ -13,7 +13,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.Queue;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import ru.technotrack.divlev.messenger.config.ApplicationConfig;
 import ru.technotrack.divlev.messenger.util.JSONUtil;
@@ -24,7 +24,7 @@ public class NetworkImpl implements Network {
 
     private NetworkListener listener;
     private Socket socket;
-    private boolean stop;
+    private volatile boolean stop;
     private Queue<String> messageQueue;
     private Thread receiver;
     private Thread sender;
@@ -42,33 +42,33 @@ public class NetworkImpl implements Network {
             try {
                 boolean cleanup = false;
                 byte[] data = new byte[32768];
-                int offset = 0;
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
                 do {
                     if (cleanup) {
                         outputStream.reset();
-                        offset = 0;
                         cleanup = false;
                     }
                     // Запись в data производится от 0
                     int readBytes = inStream.read(data);
                     if (readBytes != -1) {
-                        outputStream.write(data, offset, readBytes);
-                        offset += readBytes;
+                        outputStream.write(data, 0, readBytes);
                         outputStream.flush();
                         String result = outputStream.toString("utf-8");
+                        Log.i(TAG, "Result:" + result);
                         if (result.endsWith("}") && JSONUtil.isJSONValid(result)) {
                             Log.i(TAG, "Received message:" + result);
                             listener.onReceiveMessage(result);
                             cleanup = true;
                         }
                     } else {
-                        Log.d(TAG,"Couldn't read anything.");
+                        network.listener.onNetworkError(NetworkErrorType.SOCKET_IS_CLOSED);
+                        break;
                     }
                 } while (!stop);
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage());
+                e.printStackTrace();
             }
         }
     }
@@ -77,7 +77,7 @@ public class NetworkImpl implements Network {
         private final OutputStream outStream;
 
         public MessageSender() throws IOException {
-            outStream = new BufferedOutputStream(socket.getOutputStream());
+            outStream = socket.getOutputStream();
         }
 
         @Override
@@ -99,8 +99,10 @@ public class NetworkImpl implements Network {
                         try {
                             outStream.write(data);
                             outStream.flush();
+                            Log.i(TAG, "Sent: " + msg);
                         } catch (IOException e) {
                             Log.e(TAG, e.getMessage());
+                            network.listener.onNetworkError(NetworkErrorType.SOCKET_IS_CLOSED);
                         }
                     }
                 }
@@ -121,7 +123,7 @@ public class NetworkImpl implements Network {
 
     @Override
     public void start() {
-        messageQueue = new SynchronousQueue<>();
+        messageQueue = new ConcurrentLinkedQueue<>();
         stop = false;
 
         openSocketTask = new ConnectServerTask();
@@ -143,6 +145,7 @@ public class NetworkImpl implements Network {
                 sender.start();
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage());
+                network.listener.onNetworkError(NetworkErrorType.SOCKET_OPENING_FAILED);
             }
 
             return null;
@@ -161,12 +164,20 @@ public class NetworkImpl implements Network {
     @Override
     public void finish() {
         try {
+            Log.i(TAG, "Finishing...");
             stop = true;
+            synchronized (network) {
+                network.notify();
+            }
             sender.join();
             receiver.join();
             messageQueue = null;
+            socket.close();
+            Log.i(TAG, "Finished.");
         } catch (InterruptedException e) {
             Log.e(TAG, e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
