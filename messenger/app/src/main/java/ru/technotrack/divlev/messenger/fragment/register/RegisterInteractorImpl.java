@@ -2,13 +2,17 @@ package ru.technotrack.divlev.messenger.fragment.register;
 
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.gson.JsonObject;
 
+import ru.technotrack.divlev.messenger.config.ApplicationConfig;
+import ru.technotrack.divlev.messenger.config.MessageType;
 import ru.technotrack.divlev.messenger.logic.ApplicationLogic;
 import ru.technotrack.divlev.messenger.util.Utils;
 
 public class RegisterInteractorImpl implements RegisterIterator, ApplicationLogic.ApplicationLogicListener {
+    private final String TAG = RegisterInteractorImpl.class.getSimpleName().toUpperCase();
     private RegisterInteractorListener listener;
     private String login;
     private String nickname;
@@ -64,6 +68,22 @@ public class RegisterInteractorImpl implements RegisterIterator, ApplicationLogi
 
     @Override
     public void onMessageReceived(String type, JsonObject data) {
+        switch (MessageType.valueOf(type.toUpperCase())) {
+            case WELCOME:
+                break;
+            case AUTH:
+                int status = data.get("status").getAsInt();
 
+                switch (status) {
+                    case ApplicationConfig.ServerError.ErrOK:
+                        listener.onSuccess();
+                        break;
+                    default:
+                        Log.e(TAG, "Unexpected auth error: " + status);
+                }
+                break;
+            default:
+                Log.e(TAG, "Unexpected message type: " + type + ".");
+        }
     }
 }

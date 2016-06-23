@@ -9,6 +9,8 @@ public interface RegisterIterator {
         void onNicknameError(String msg);
 
         void onOfflineCheckSuccess(String login, String password, String nickname);
+
+        void onSuccess();
     }
 
     void validateCredentials(String username, String password, String nickname);
